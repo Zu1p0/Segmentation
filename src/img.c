@@ -71,13 +71,13 @@ Graph *img_to_graph(unsigned char *pixels, int w, int h, int *plan1, int length1
 
     // Plan 1
     for (int i = 0; i < length1; i++) {
-        add_edge(g, g->s, plan1[i], 1e6);
+        add_edge(g, g->source, plan1[i], 1e6);
     }
 
     // Plan 2
 
     for (int i = 0; i < length2; i++) {
-        add_edge(g, plan2[i], g->t, 1e6);
+        add_edge(g, plan2[i], g->target, 1e6);
     }
 
     return g;

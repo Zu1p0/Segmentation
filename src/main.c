@@ -19,8 +19,8 @@ void test_create_and_free_graph() {
     // Vérification des attributs de base
     assert(g != NULL);
     assert(g->num_nodes == num_nodes);
-    assert(g->s == s);
-    assert(g->t == t);
+    assert(g->source == s);
+    assert(g->target == t);
 
     // Vérification de l'initialisation des noeuds
     for (int i = 0; i < num_nodes; i++) {

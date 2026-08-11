@@ -29,13 +29,13 @@ void compute_max_flow(Graph *g) {
             file[i] = NULL;
         }
 
-        file[end++] = &g->nodes[g->s];
+        file[end++] = &g->nodes[g->source];
 
         while (start < end) {
 
             Node *node = file[start++];
 
-            if (node == &g->nodes[g->t]) {
+            if (node == &g->nodes[g->target]) {
                 reached_t = true;
                 break;
             }
@@ -43,7 +43,7 @@ void compute_max_flow(Graph *g) {
             for (int i_edge = 0; i_edge < node->num_edges; i_edge++) {
                 Edge *edge = &node->edges[i_edge];
 
-                if (edge->capacity - edge->flow > 1e-9 && parent[edge->to] == NULL && edge->to != g->s) {
+                if (edge->capacity - edge->flow > 1e-9 && parent[edge->to] == NULL && edge->to != g->source) {
                     file[end++] = &g->nodes[edge->to];
                     parent[edge->to] = edge;
                 }
@@ -56,10 +56,10 @@ void compute_max_flow(Graph *g) {
 
         // Recherche de la capacité résiduelle minimale sur le chemin : "goulot d'étranglement"
 
-        int current = g->t;
+        int current = g->target;
         int min_res_capacity = INT_MAX;
 
-        while (current != g->s) {
+        while (current != g->source) {
             int res_capacity = parent[current]->capacity - parent[current]->flow;
 
             if (res_capacity < min_res_capacity) {
@@ -71,9 +71,9 @@ void compute_max_flow(Graph *g) {
 
         // Modification correspondante du flot
 
-        current = g->t;
+        current = g->target;
 
-        while (current != g->s) {
+        while (current != g->source) {
             parent[current]->flow += min_res_capacity;
             parent[current]->rev->flow -= min_res_capacity;
 
@@ -101,8 +101,8 @@ bool *compute_min_cut(Graph *g) {
         file[i] = NULL;
     }
 
-    mask[g->s] = true;
-    file[end++] = &g->nodes[g->s];
+    mask[g->source] = true;
+    file[end++] = &g->nodes[g->source];
 
     while (start < end) {
 

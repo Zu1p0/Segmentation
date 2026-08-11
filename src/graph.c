@@ -6,19 +6,19 @@
 
 // Graph
 
-Graph *create_graph(int num_nodes, int s, int t) {
+Graph *create_graph(int num_nodes, int source, int target) {
     assert(num_nodes >= 2);
     Graph *g = malloc(sizeof(Graph));
 
     g->num_nodes = num_nodes;
-    g->s = s;
-    g->t = t;
+    g->source = source;
+    g->target = target;
 
     g->nodes = malloc(num_nodes * sizeof(Node));
 
     for (int i = 0; i < num_nodes; i++) {
         g->nodes[i].num_edges = 0;
-        if (i == g->s || i == g->t) {
+        if (i == g->source || i == g->target) {
             g->nodes[i].edges = malloc(g->num_nodes * sizeof(Edge));
         } else {
             g->nodes[i].edges = malloc(MAX_EDGES * sizeof(Edge));
@@ -29,8 +29,8 @@ Graph *create_graph(int num_nodes, int s, int t) {
 }
 
 void add_edge(Graph *g, int from, int to, int capacity) {
-    assert(g->nodes[from].num_edges < MAX_EDGES || from == g->s || from == g->t);
-    assert(g->nodes[to].num_edges < MAX_EDGES || to == g->s || to == g->t);
+    assert(g->nodes[from].num_edges < MAX_EDGES || from == g->source || from == g->target);
+    assert(g->nodes[to].num_edges < MAX_EDGES || to == g->source || to == g->target);
 
     Edge *dir = &(g->nodes[from].edges[g->nodes[from].num_edges]);
     Edge *rev = &(g->nodes[to].edges[g->nodes[to].num_edges]);
@@ -72,9 +72,9 @@ void print_graph(Graph *g) {
         Node *node = &g->nodes[i];
 
         // Affichage de l'en-tête du noeud avec un tag spécial pour S et T
-        if (i == g->s) {
+        if (i == g->source) {
             printf("\n[ Node %3d ] (s)\n", i);
-        } else if (i == g->t) {
+        } else if (i == g->target) {
             printf("\n[ Node %3d ] (t)\n", i);
         } else {
             printf("\n[ Node %3d ]\n", i);
@@ -109,7 +109,7 @@ void print_graph(Graph *g) {
     }
     printf("==============================================================\n\n");
     printf(" Total Nodes: %d  |  s : %d  |  t : %d | Flow : %i\n",
-           g->num_nodes, g->s, g->t, get_flow(g));
+           g->num_nodes, g->source, g->target, get_flow(g));
     printf("==============================================================\n\n");
 }
 
@@ -164,7 +164,7 @@ bool check_flow(Graph *g) {
         }
 
         // printf("Netflow de %i = %i\n", i_node, flow);
-        if (i_node != g->s && i_node != g->t && n_flow != 0) {
+        if (i_node != g->source && i_node != g->target && n_flow != 0) {
             return false;
         }
     }
@@ -173,7 +173,7 @@ bool check_flow(Graph *g) {
 }
 
 int get_flow(Graph *g) {
-    Node *source = &g->nodes[g->s];
+    Node *source = &g->nodes[g->source];
     int flow = 0.;
 
     for (int i_edge = 0; i_edge < source->num_edges; i_edge++) {

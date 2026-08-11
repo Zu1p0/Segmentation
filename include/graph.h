@@ -21,8 +21,8 @@ typedef struct {
 typedef struct {
     Node *nodes;
     int num_nodes;
-    int s;
-    int t;
+    int source;
+    int target;
 } Graph;
 
 // Graph
