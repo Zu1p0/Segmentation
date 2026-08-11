@@ -42,7 +42,7 @@ void compute_max_flow(Graph *g) {
             for (int i_edge = 0; i_edge < node->num_edges; i_edge++) {
                 Edge *edge = get_edge(node, i_edge);
 
-                if (edge->capacity - edge->flow > 1e-9 && parent[edge->to] == NULL && edge->to != g->source) {
+                if (residual_capacity(edge) != 0 && parent[edge->to] == NULL && edge->to != g->source) {
                     file[end++] = get_node(g, edge->to);
                     parent[edge->to] = edge;
                 }
@@ -59,7 +59,7 @@ void compute_max_flow(Graph *g) {
         int min_res_capacity = INT_MAX;
 
         while (current != g->source) {
-            int res_capacity = parent[current]->capacity - parent[current]->flow;
+            int res_capacity = residual_capacity(parent[current]);
 
             if (res_capacity < min_res_capacity) {
                 min_res_capacity = res_capacity;
@@ -73,8 +73,7 @@ void compute_max_flow(Graph *g) {
         current = g->target;
 
         while (current != g->source) {
-            parent[current]->flow += min_res_capacity;
-            parent[current]->rev->flow -= min_res_capacity;
+            push_flow(parent[current], min_res_capacity);
 
             current = parent[current]->rev->to;
         }
@@ -110,7 +109,7 @@ bool *compute_min_cut(Graph *g) {
         for (int i_edge = 0; i_edge < node->num_edges; i_edge++) {
             Edge *edge = get_edge(node, i_edge);
 
-            if (edge->capacity != edge->flow && mask[edge->to] == false) {
+            if (residual_capacity(edge) != 0 && mask[edge->to] == false) {
                 file[end++] = get_node(g, edge->to);
                 mask[edge->to] = true;
             }
