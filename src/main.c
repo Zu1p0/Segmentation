@@ -195,8 +195,8 @@ int main(int argc, char **argv) {
 
     printf("Mask saved\n");
 
-    // free(plan1);
-    // free(plan2);
+    free(plan1);
+    free(plan2);
     free(seg_pixels);
     free(mask);
     free(pixels);
