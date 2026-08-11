@@ -24,8 +24,8 @@ void test_create_and_free_graph() {
 
     // Vérification de l'initialisation des noeuds
     for (int i = 0; i < num_nodes; i++) {
-        assert(g->nodes[i].num_edges == 0);
-        assert(g->nodes[i].edges != NULL);// Vérifie que le tableau d'arêtes est bien alloué
+        assert(get_node(g, i)->num_edges == 0);
+        assert(get_node(g, i)->edges != NULL);// Vérifie que le tableau d'arêtes est bien alloué
     }
 
     // Si free_graph a un bug (ex: int free), ça plantera ici
@@ -40,12 +40,12 @@ void test_add_edge() {
     add_edge(g, 0, 1, 15.0);
 
     // Vérification de l'incrémentation des compteurs
-    assert(g->nodes[0].num_edges == 1);
-    assert(g->nodes[1].num_edges == 1);
+    assert(get_node(g, 0)->num_edges == 1);
+    assert(get_node(g, 1)->num_edges == 1);
 
     // Récupération des pointeurs vers les arêtes créées
-    Edge *forward = &g->nodes[0].edges[0];
-    Edge *reverse = &g->nodes[1].edges[0];
+    Edge *forward = get_edge(get_node(g, 0), 0);
+    Edge *reverse = get_edge(get_node(g, 1), 0);
 
     // Vérification du sens aller
     assert(forward->to == 1);

@@ -17,41 +17,20 @@ Graph *create_graph(int num_nodes, int source, int target) {
     g->nodes = malloc(num_nodes * sizeof(Node));
 
     for (int i = 0; i < num_nodes; i++) {
-        g->nodes[i].num_edges = 0;
+        get_node(g, i)->num_edges = 0;
         if (i == g->source || i == g->target) {
-            g->nodes[i].edges = malloc(g->num_nodes * sizeof(Edge));
+            get_node(g, i)->edges = malloc(g->num_nodes * sizeof(Edge));
         } else {
-            g->nodes[i].edges = malloc(MAX_EDGES * sizeof(Edge));
+            get_node(g, i)->edges = malloc(MAX_EDGES * sizeof(Edge));
         }
     }
 
     return g;
 }
 
-void add_edge(Graph *g, int from, int to, int capacity) {
-    assert(g->nodes[from].num_edges < MAX_EDGES || from == g->source || from == g->target);
-    assert(g->nodes[to].num_edges < MAX_EDGES || to == g->source || to == g->target);
-
-    Edge *dir = &(g->nodes[from].edges[g->nodes[from].num_edges]);
-    Edge *rev = &(g->nodes[to].edges[g->nodes[to].num_edges]);
-
-    dir->to = to;
-    dir->capacity = capacity;
-    dir->flow = 0.;
-    dir->rev = rev;
-
-    rev->to = from;
-    rev->capacity = capacity;
-    rev->flow = 0.;
-    rev->rev = dir;
-
-    g->nodes[from].num_edges++;
-    g->nodes[to].num_edges++;
-}
-
 void free_graph(Graph *g) {
     for (int i = 0; i < g->num_nodes; i++) {
-        free(g->nodes[i].edges);
+        free(get_node(g, i)->edges);
     }
     free(g->nodes);
     free(g);
@@ -69,7 +48,7 @@ void print_graph(Graph *g) {
     printf("==============================================================\n");
 
     for (int i = 0; i < g->num_nodes; i++) {
-        Node *node = &g->nodes[i];
+        Node *node = get_node(g, i);
 
         // Affichage de l'en-tête du noeud avec un tag spécial pour S et T
         if (i == g->source) {
@@ -88,7 +67,7 @@ void print_graph(Graph *g) {
 
         // Parcours et affichage de toutes les arêtes du noeud
         for (int j = 0; j < node->num_edges; j++) {
-            Edge *edge = &node->edges[j];
+            Edge *edge = get_edge(node, j);
 
             // Détermine si c'est la dernière arête pour fermer le dessin proprement
             const char *prefix = (j == node->num_edges - 1) ? "└──►" : "├──►";
@@ -113,11 +92,38 @@ void print_graph(Graph *g) {
     printf("==============================================================\n\n");
 }
 
+
+void add_edge(Graph *g, int from, int to, int capacity) {
+
+    Node *from_node = get_node(g, from);
+    Node *to_node = get_node(g, to);
+
+    assert(from_node->num_edges < MAX_EDGES || from == g->source || from == g->target);
+    assert(to_node->num_edges < MAX_EDGES || to == g->source || to == g->target);
+
+    Edge *dir = get_edge(from_node, from_node->num_edges);
+    Edge *rev = get_edge(to_node, to_node->num_edges);
+
+    dir->to = to;
+    dir->capacity = capacity;
+    dir->flow = 0.;
+    dir->rev = rev;
+
+    rev->to = from;
+    rev->capacity = capacity;
+    rev->flow = 0.;
+    rev->rev = dir;
+
+    from_node->num_edges++;
+    to_node->num_edges++;
+}
+
+
 // Flow
 
 void set_flow(Graph *g, int from, int to, int flow) {
-    for (int i_edge = 0; i_edge < g->nodes[from].num_edges; i_edge++) {
-        Edge *edge = &g->nodes[from].edges[i_edge];
+    for (int i_edge = 0; i_edge < get_node(g, from)->num_edges; i_edge++) {
+        Edge *edge = get_edge(get_node(g, from), i_edge);
         if (edge->to == to) {
             edge->flow = flow;
             edge->rev->flow = -flow;
@@ -128,8 +134,8 @@ void set_flow(Graph *g, int from, int to, int flow) {
 
 /*
 void add_flow(Graph *g, int from, int to, int delta_flow) {
-    for (int i_edge = 0; i_edge < g->nodes[from].num_edges; i_edge++) {
-        Edge *edge = &g->nodes[from].edges[i_edge];
+    for (int i_edge = 0; i_edge < get_node(g,from].num_edges; i_edge++) {
+        Edge *edge = &get_node(g,from].edges[i_edge];
         if (edge->to == to) {
             edge->flow += delta_flow;
             edge->rev->flow -= delta_flow;
@@ -142,12 +148,12 @@ void add_flow(Graph *g, int from, int to, int delta_flow) {
 bool check_flow(Graph *g) {
     for (int i_node = 0; i_node < g->num_nodes; i_node++) {
 
-        Node *node = &g->nodes[i_node];
+        Node *node = get_node(g, i_node);
 
         int n_flow = 0.;
 
         for (int i_edge = 0; i_edge < node->num_edges; i_edge++) {
-            Edge *edge = &node->edges[i_edge];
+            Edge *edge = get_edge(node, i_edge);
 
             if (edge->flow + edge->rev->flow != 0) {
                 // printf("L'anti-symetrie n'est pas respectée entre %i et %i\n", i_node, edge->to);
@@ -173,11 +179,11 @@ bool check_flow(Graph *g) {
 }
 
 int get_flow(Graph *g) {
-    Node *source = &g->nodes[g->source];
+    Node *source = get_node(g, g->source);
     int flow = 0.;
 
     for (int i_edge = 0; i_edge < source->num_edges; i_edge++) {
-        flow += source->edges[i_edge].flow;
+        flow += get_edge(source, i_edge)->flow;
     }
 
     return flow;

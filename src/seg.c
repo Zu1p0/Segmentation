@@ -29,22 +29,21 @@ void compute_max_flow(Graph *g) {
             file[i] = NULL;
         }
 
-        file[end++] = &g->nodes[g->source];
+        file[end++] = get_node(g, g->source);
 
         while (start < end) {
-
             Node *node = file[start++];
 
-            if (node == &g->nodes[g->target]) {
+            if (node == get_node(g, g->target)) {
                 reached_t = true;
                 break;
             }
 
             for (int i_edge = 0; i_edge < node->num_edges; i_edge++) {
-                Edge *edge = &node->edges[i_edge];
+                Edge *edge = get_edge(node, i_edge);
 
                 if (edge->capacity - edge->flow > 1e-9 && parent[edge->to] == NULL && edge->to != g->source) {
-                    file[end++] = &g->nodes[edge->to];
+                    file[end++] = get_node(g, edge->to);
                     parent[edge->to] = edge;
                 }
             }
@@ -102,17 +101,17 @@ bool *compute_min_cut(Graph *g) {
     }
 
     mask[g->source] = true;
-    file[end++] = &g->nodes[g->source];
+    file[end++] = get_node(g, g->source);
 
     while (start < end) {
 
         Node *node = file[start++];
 
         for (int i_edge = 0; i_edge < node->num_edges; i_edge++) {
-            Edge *edge = &node->edges[i_edge];
+            Edge *edge = get_edge(node, i_edge);
 
             if (edge->capacity != edge->flow && mask[edge->to] == false) {
-                file[end++] = &g->nodes[edge->to];
+                file[end++] = get_node(g, edge->to);
                 mask[edge->to] = true;
             }
         }

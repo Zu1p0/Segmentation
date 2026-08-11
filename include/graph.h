@@ -27,9 +27,12 @@ typedef struct {
 
 // Graph
 Graph *create_graph(int num_nodes, int s, int t);
-void add_edge(Graph *g, int from, int to, int capacity);
 void free_graph(Graph *g);
 void print_graph(Graph *g);
+void add_edge(Graph *g, int from, int to, int capacity);
+static inline Node *get_node(Graph *g, int i_node) { return &g->nodes[i_node]; }
+static inline Edge *get_edge(Node *node, int i_edge) { return &node->edges[i_edge]; }
+
 
 // Flow
 void set_flow(Graph *g, int from, int to, int delta_flow);
