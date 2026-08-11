@@ -143,8 +143,19 @@ int main(int argc, char **argv) {
     int h;
     unsigned char *pixels = load_pgm(filename_img, &w, &h);
 
+    printf("Loading graph\n");
 
     /*
+    // Objet
+    int plan1[1] = {((h / 2) * w + w / 2)};
+    int length1 = 1;
+
+    // Fond
+    int plan2[1] = {0};
+    int length2 = 1;
+    */
+
+
     // Objet : Carré de pixels au centre de l'image
     int *plan1 = malloc(400 * sizeof(int));
     int length1 = 0;
@@ -159,24 +170,13 @@ int main(int argc, char **argv) {
     int *plan2 = malloc(2 * (w + h) * sizeof(int));
     int length2 = 0;
     for (int x = 0; x < w; x++) {
-        plan2[length2++] = x;              
+        plan2[length2++] = x;
         plan2[length2++] = (h - 1) * w + x;
     }
     for (int y = 1; y < h - 1; y++) {
-        plan2[length2++] = y * w;         
+        plan2[length2++] = y * w;
         plan2[length2++] = y * w + (w - 1);
     }
-    */
-
-    printf("Loading graph\n");
-
-    // Objet
-    int plan1[1] = {((h / 2) * w + w / 2)};
-    int length1 = 1;
-
-    // Fond
-    int plan2[1] = {0};
-    int length2 = 1;
 
     Graph *g = img_to_graph(pixels, w, h, plan1, length1, plan2, length2, sigma);
 

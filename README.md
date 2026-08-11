@@ -6,6 +6,14 @@
 - `data/` : Input and Output Images
 
 ## Compilation :
-Simply type `make` in the project's root directory.
-The executable will be generated in a new `bin/` folder.
-To clear everything: `make clean`.
+- `make` or `make all` to compile the project
+- `make release` to compile the project without sanitizers
+- `make clean` to clean the project
+
+## Use :
+```bash 
+./bin/seg input_image_path mask_path [contrast_factor]
+```
+> **Note :** `contrast_factor` (or *sigma*) is optional.
+
+## TODO : Flexible user choice for init pixels
